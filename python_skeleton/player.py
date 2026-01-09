@@ -99,17 +99,40 @@ class Player(Bot):
         # the number of chips your opponent has contributed to the pot
         opp_contribution = STARTING_STACK - opp_stack
 
-        print(my_cards)
         # Only use DiscardAction if it's in legal_actions (which already checks street)
         # legal_actions() returns DiscardAction only when street is 2 or 3
+
+        #Want to aim for a pair, as that gives the highest chance of a better hand
         if DiscardAction in legal_actions:
-            # Randomly choose card to discard
-            return DiscardAction(0)
+            ranks = []
+            suits = []
+            for card in my_cards:
+                ranks.append(card[0])
+                suits.append(card[1])
+
+            for card_index in range(2):
+
+                if ranks[card_index] == ranks[card_index+1]:
+
+                    return DiscardAction(-2*card_index + 2)
+                
+            if ranks[0] == ranks[2]:
+                return DiscardAction(1)
+            
+            for card_index in range(2):
+
+                if suits[card_index] == suits[card_index+1]:
+
+                    return DiscardAction(-2*card_index + 2)
+                
+            if suits[0] == suits[2]:
+                return DiscardAction(1)
+                
         if RaiseAction in legal_actions:
             # the smallest and largest numbers of chips for a legal bet/raise
             min_raise, max_raise = round_state.raise_bounds()
-            min_cost = min_raise - my_pip  # the cost of a minimum bet/raise
-            max_cost = max_raise - my_pip  # the cost of a maximum bet/raise
+            #min_cost = min_raise - my_pip  # the cost of a minimum bet/raise
+            #max_cost = max_raise - my_pip  # the cost of a maximum bet/raise
             if random.random() < 0.5:
                 return RaiseAction(min_raise)
         if CheckAction in legal_actions:  # check-call
