@@ -106,7 +106,26 @@ class Player(Bot):
         if DiscardAction in legal_actions:
             ranks = []
             suits = []
-            for card in my_cards:
+            translate = {
+                "A": 14,
+                "J": 11,
+                "Q": 12,
+                "K": 13,
+                "T": 10
+            }
+            min_rank = 20
+            min_card = None
+            for card, index in enumerate(my_cards):
+                value = 0
+                if not card[0].isdigit():
+                    value = translate[card[0]]
+                else:
+                    value = int(card[0])
+
+                if value < min_rank:
+                    min_rank = value
+                    min_card = index
+                
                 ranks.append(card[0])
                 suits.append(card[1])
 
@@ -127,17 +146,19 @@ class Player(Bot):
                 
             if suits[0] == suits[2]:
                 return DiscardAction(1)
-                
+            
+            return DiscardAction(min_card)
+            
         if RaiseAction in legal_actions:
             # the smallest and largest numbers of chips for a legal bet/raise
             min_raise, max_raise = round_state.raise_bounds()
             #min_cost = min_raise - my_pip  # the cost of a minimum bet/raise
             #max_cost = max_raise - my_pip  # the cost of a maximum bet/raise
-            if random.random() < 0.5:
+            if random.random() < 0.3:
                 return RaiseAction(min_raise)
         if CheckAction in legal_actions:  # check-call
             return CheckAction()
-        if random.random() < 0.25:
+        if random.random() < 0.30:
             return FoldAction()
         return CallAction()
 
