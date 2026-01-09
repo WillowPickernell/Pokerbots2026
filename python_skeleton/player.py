@@ -99,48 +99,24 @@ class Player(Bot):
         # the number of chips your opponent has contributed to the pot
         opp_contribution = STARTING_STACK - opp_stack
 
-        fold = random.random()
-
-        #Hardcode probability to fold at 5%
-        #Everything else has equal probability
-        #Including the bet total choice
-        
-        if fold <= 0.05:
-            return FoldAction()
-        
-        else:
-            choice = legal_actions[random.randint(0, len(legal_actions)-1)]
-
-            if choice == RaiseAction:
-                
-                min_raise, max_raise = round_state.raise_bounds()
-                
-                bet = random.randint(min_raise, max_raise)
-
-                return RaiseAction(bet)
-            
-            else:
-
-                return choice()
-
+        print(my_cards)
         # Only use DiscardAction if it's in legal_actions (which already checks street)
         # legal_actions() returns DiscardAction only when street is 2 or 3
-        #if DiscardAction in legal_actions:
+        if DiscardAction in legal_actions:
             # Randomly choose card to discard
-        #    discard = random.randint(0, 1)
-        #    return DiscardAction(discard)
-        #if RaiseAction in legal_actions:
+            return DiscardAction(0)
+        if RaiseAction in legal_actions:
             # the smallest and largest numbers of chips for a legal bet/raise
-        #    min_raise, max_raise = round_state.raise_bounds()
-        #    min_cost = min_raise - my_pip  # the cost of a minimum bet/raise
-        #    max_cost = max_raise - my_pip  # the cost of a maximum bet/raise
-        #    if random.random() < 0.5:
-        #        return RaiseAction(min_raise)
-        #if CheckAction in legal_actions:  # check-call
-        #    return CheckAction()
-        #if random.random() < 0.25:
-        #    return FoldAction()
-        #return CallAction()
+            min_raise, max_raise = round_state.raise_bounds()
+            min_cost = min_raise - my_pip  # the cost of a minimum bet/raise
+            max_cost = max_raise - my_pip  # the cost of a maximum bet/raise
+            if random.random() < 0.5:
+                return RaiseAction(min_raise)
+        if CheckAction in legal_actions:  # check-call
+            return CheckAction()
+        if random.random() < 0.25:
+            return FoldAction()
+        return CallAction()
 
 
 if __name__ == '__main__':
