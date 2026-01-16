@@ -191,9 +191,6 @@ class Player(Bot):
                         self.hand_strength = 3
                         return RaiseAction(min_raise + (max_raise - min_raise)//2)
                     
-                    else:
-                        pass
-                    
                 if self.suit_match:
 
                     #4 same suit cards and 2 left for the board -> max raise
@@ -214,22 +211,19 @@ class Player(Bot):
 
                         if raise_check > 0.95:
                             return RaiseAction(min_raise)
-                        pass
 
         if CheckAction in legal_actions:  # check-call
             return CheckAction()
         
         if CallAction in legal_actions:
 
-            hand_check = random.randint(0, 5)
+            hand_check = random.randint(1, 5)
             if self.hand_strength < hand_check:
                 return FoldAction()
             
             return CallAction()
         
         return FoldAction()
-
-
 
 if __name__ == '__main__':
     run_bot(Player(), parse_args())
