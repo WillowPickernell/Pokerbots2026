@@ -162,6 +162,7 @@ class Player(Bot):
             if len(board_cards) <= 3:
                 return RaiseAction(min_raise)
             
+            else:
             min_raise, max_raise = round_state.raise_bounds()
             #min_cost = min_raise - my_pip  # the cost of a minimum bet/raise
             #max_cost = max_raise - my_pip  # the cost of a maximum bet/raise
@@ -221,9 +222,11 @@ class Player(Bot):
         if CallAction in legal_actions:
 
             hand_check = random.randint(0, 5)
-            if self.hand_strength >= hand_check:
-                return CallAction()
+            if self.hand_strength < hand_check:
+                return FoldAction()
             
+            return CallAction()
+        
         return FoldAction()
 
 
