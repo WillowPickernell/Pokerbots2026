@@ -25,7 +25,10 @@ class Player(Bot):
         Returns:
         Nothing.
         '''
-        pass
+        self.has_pair = False
+        self.suit_match = False
+        self.connected = False
+        self.hand_strength = 1
 
     def handle_new_round(self, game_state, round_state, active):
         '''
@@ -103,16 +106,17 @@ class Player(Bot):
         # legal_actions() returns DiscardAction only when street is 2 or 3
 
         #Want to aim for a pair, as that gives the highest chance of a better hand
-        if DiscardAction in legal_actions:
-            ranks = []
-            suits = []
-            translate = {
+        translate = {
                 "A": 14,
                 "J": 11,
                 "Q": 12,
                 "K": 13,
                 "T": 10
             }
+        
+        if DiscardAction in legal_actions:
+            ranks = []
+            suits = []
             min_rank = 20
             min_card = None
             for card, index in enumerate(my_cards):
@@ -132,10 +136,13 @@ class Player(Bot):
             for card_index in range(2):
 
                 if ranks[card_index] == ranks[card_index+1]:
-
+                    
+                    self.has_pair = True
                     return DiscardAction(-2*card_index + 2)
                 
             if ranks[0] == ranks[2]:
+
+                self.has_pair = True
                 return DiscardAction(1)
             
             for card_index in range(2):
@@ -154,13 +161,67 @@ class Player(Bot):
             min_raise, max_raise = round_state.raise_bounds()
             #min_cost = min_raise - my_pip  # the cost of a minimum bet/raise
             #max_cost = max_raise - my_pip  # the cost of a maximum bet/raise
-            if random.random() < 0.3:
-                return RaiseAction(min_raise)
+            board_rank_match = 0
+            board_suit_match = 0
+
+            for board_card in board_cards:
+
+                for card in my_cards:
+
+                    if board_card[0] == card[0]:
+                        board_rank_match += 1
+
+                    if board_card[1] == card[1]:
+                        board_suit_match += 1
+
+            if self.has_pair:
+
+                #If we have 4 of a kind, max raise
+                if board_rank_match >= 4:
+                    self.hand_strength = 5
+                    return RaiseAction(max_raise)
+                
+                #Three of a kind, average between min and max
+                elif board_rank_match >= 2:
+                    self.hand_strength = 3
+                    return RaiseAction(min_raise + (max_raise - min_raise)//2)
+                
+                else:
+                    pass
+                
+            if self.suit_match:
+
+                #4 same suit cards and 2 left for the board -> max raise
+                if board_suit_match >= 4 and len(board_cards) == 4:
+                    self.hand_strength = 4
+                    return RaiseAction(max_raise)
+                
+                #4 same suit cards and 1 left for the board -> average between min and max
+                elif board_suit_match >= 4 and len(board_cards) == 5:
+                    self.hand_strength = 3
+                    return RaiseAction(min_raise + (max_raise - min_raise)//2)
+                
+                #Only 3 same suit cards and 2 left for the board, 5% chance to raise
+                elif board_suit_match >= 2 and len(board_cards) == 4:
+
+                    self.hand_strength = 2
+                    raise_check = random.random()
+
+                    if raise_check > 0.95:
+                        return RaiseAction(min_raise)
+                    pass
+
         if CheckAction in legal_actions:  # check-call
             return CheckAction()
-        if random.random() < 0.30:
-            return FoldAction()
-        return CallAction()
+        
+        if CallAction in legal_actions:
+
+            hand_check = random.randint(0, 5)
+            if self.hand_strength >= hand_check:
+                return CallAction()
+            
+        return FoldAction()
+
 
 
 if __name__ == '__main__':
