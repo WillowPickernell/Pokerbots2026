@@ -163,58 +163,58 @@ class Player(Bot):
                 return RaiseAction(min_raise)
             
             else:
-            min_raise, max_raise = round_state.raise_bounds()
-            #min_cost = min_raise - my_pip  # the cost of a minimum bet/raise
-            #max_cost = max_raise - my_pip  # the cost of a maximum bet/raise
-            board_rank_match = 0
-            board_suit_match = 0
+                min_raise, max_raise = round_state.raise_bounds()
+                #min_cost = min_raise - my_pip  # the cost of a minimum bet/raise
+                #max_cost = max_raise - my_pip  # the cost of a maximum bet/raise
+                board_rank_match = 0
+                board_suit_match = 0
 
-            for board_card in board_cards:
+                for board_card in board_cards:
 
-                for card in my_cards:
+                    for card in my_cards:
 
-                    if board_card[0] == card[0]:
-                        board_rank_match += 1
+                        if board_card[0] == card[0]:
+                            board_rank_match += 1
 
-                    if board_card[1] == card[1]:
-                        board_suit_match += 1
+                        if board_card[1] == card[1]:
+                            board_suit_match += 1
 
-            if self.has_pair:
+                if self.has_pair:
 
-                #If we have 4 of a kind, max raise
-                if board_rank_match >= 4:
-                    self.hand_strength = 5
-                    return RaiseAction(max_raise)
-                
-                #Three of a kind, average between min and max
-                elif board_rank_match >= 2:
-                    self.hand_strength = 3
-                    return RaiseAction(min_raise + (max_raise - min_raise)//2)
-                
-                else:
-                    pass
-                
-            if self.suit_match:
+                    #If we have 4 of a kind, max raise
+                    if board_rank_match >= 4:
+                        self.hand_strength = 5
+                        return RaiseAction(max_raise)
+                    
+                    #Three of a kind, average between min and max
+                    elif board_rank_match >= 2:
+                        self.hand_strength = 3
+                        return RaiseAction(min_raise + (max_raise - min_raise)//2)
+                    
+                    else:
+                        pass
+                    
+                if self.suit_match:
 
-                #4 same suit cards and 2 left for the board -> max raise
-                if board_suit_match >= 4 and len(board_cards) == 4:
-                    self.hand_strength = 4
-                    return RaiseAction(max_raise)
-                
-                #4 same suit cards and 1 left for the board -> average between min and max
-                elif board_suit_match >= 4 and len(board_cards) == 5:
-                    self.hand_strength = 3
-                    return RaiseAction(min_raise + (max_raise - min_raise)//2)
-                
-                #Only 3 same suit cards and 2 left for the board, 5% chance to raise
-                elif board_suit_match >= 2 and len(board_cards) == 4:
+                    #4 same suit cards and 2 left for the board -> max raise
+                    if board_suit_match >= 4 and len(board_cards) == 4:
+                        self.hand_strength = 4
+                        return RaiseAction(max_raise)
+                    
+                    #4 same suit cards and 1 left for the board -> average between min and max
+                    elif board_suit_match >= 4 and len(board_cards) == 5:
+                        self.hand_strength = 3
+                        return RaiseAction(min_raise + (max_raise - min_raise)//2)
+                    
+                    #Only 3 same suit cards and 2 left for the board, 5% chance to raise
+                    elif board_suit_match >= 2 and len(board_cards) == 4:
 
-                    self.hand_strength = 2
-                    raise_check = random.random()
+                        self.hand_strength = 2
+                        raise_check = random.random()
 
-                    if raise_check > 0.95:
-                        return RaiseAction(min_raise)
-                    pass
+                        if raise_check > 0.95:
+                            return RaiseAction(min_raise)
+                        pass
 
         if CheckAction in legal_actions:  # check-call
             return CheckAction()
