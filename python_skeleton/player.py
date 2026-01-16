@@ -115,6 +115,8 @@ class Player(Bot):
             }
         
         if DiscardAction in legal_actions:
+
+            print("Discarding")
             ranks = []
             suits = []
             min_rank = 20
@@ -158,7 +160,7 @@ class Player(Bot):
             
         if RaiseAction in legal_actions:
             # the smallest and largest numbers of chips for a legal bet/raise
-
+            print("Raising")
             if len(board_cards) <= 3:
                 return RaiseAction(min_raise)
             
@@ -213,16 +215,18 @@ class Player(Bot):
                             return RaiseAction(min_raise)
 
         if CheckAction in legal_actions:  # check-call
+            print("Checking")
             return CheckAction()
         
         if CallAction in legal_actions:
-
+            print("Call")
             hand_check = random.randint(1, 5)
             if self.hand_strength < hand_check:
                 return FoldAction()
             
             return CallAction()
         
+        print("Fold")
         return FoldAction()
 
 if __name__ == '__main__':
