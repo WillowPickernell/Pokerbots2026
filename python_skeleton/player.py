@@ -116,7 +116,6 @@ class Player(Bot):
         
         if DiscardAction in legal_actions:
 
-            print("Discarding")
             ranks = []
             suits = []
             min_rank = 20
@@ -160,12 +159,13 @@ class Player(Bot):
             
         if RaiseAction in legal_actions:
             # the smallest and largest numbers of chips for a legal bet/raise
-            print("Raising")
-            if len(board_cards) <= 3:
+            min_raise, max_raise = round_state.raise_bounds()
+
+            if len(legal_actions) == 2:
                 return RaiseAction(min_raise)
             
             else:
-                min_raise, max_raise = round_state.raise_bounds()
+                
                 #min_cost = min_raise - my_pip  # the cost of a minimum bet/raise
                 #max_cost = max_raise - my_pip  # the cost of a maximum bet/raise
                 board_rank_match = 0
